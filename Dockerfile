@@ -29,4 +29,4 @@ COPY . .
 EXPOSE 8080
 
 # Command to run the application using Gunicorn
-CMD exec gunicorn --bind :$PORT --workers 1 --worker-class uvicorn.workers.UvicornWorker app.main:app
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app.main:app

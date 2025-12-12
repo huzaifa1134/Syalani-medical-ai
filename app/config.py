@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+from typing import Optional
 
 class Settings(BaseSettings):
     #app settings
@@ -26,7 +27,7 @@ class Settings(BaseSettings):
     REDIS_PASSWORD: str = ""
     CONTEXT_TTL: int = 1800
 
-    GOOGLE_APPLICATION_CREDENTIALS: str
+    GOOGLE_APPLICATION_CREDENTIALS: Optional[str] = None
     GCP_PROJECT_ID: str
     GCP_STT_LANGUAGE: str = "ur-PK"
     GCP_TTS_LANGUAGE: str = "ur-PK"

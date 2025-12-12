@@ -13,9 +13,14 @@ settings = get_settings()
 class SpeechService:
     """Handles Speech-to-Text and Text-to-Speech operations"""
 
-    def __int__(self):
-        self.stt = speech.SpeechClient()
-        self.tts = texttospeech.TextToSpeechClient()
+    def __init__(self):
+        # If the variable exists (Local), use the file. If not (Cloud), use default auth.
+        if settings.GOOGLE_APPLICATION_CREDENTIALS:
+            self.stt_client = speech.SpeechClient.from_service_account_file(settings.GOOGLE_APPLICATION_CREDENTIALS)
+            self.tts_client = texttospeech.TextToSpeechClient.from_service_account_file(settings.GOOGLE_APPLICATION_CREDENTIALS)
+        else:
+            self.stt_client = speech.SpeechClient()  # Automatically uses Cloud Run's identity
+            self.tts_client = texttospeech.TextToSpeechClient()  # Automatically uses Cloud Run's identity
 
     async def download_audio(self, audio_url: str) -> bytes:
         """Download audio url form Whatsapp"""
