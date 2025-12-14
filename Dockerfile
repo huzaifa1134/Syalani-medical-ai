@@ -28,10 +28,4 @@ COPY . .
 EXPOSE 8080
 
 # Command to run the application using Gunicorn + Uvicorn workers (ASGI-compatible)
-CMD exec gunicorn \
-    --bind :$PORT \
-    --workers 1 \
-    --worker-class uvicorn.workers.UvicornWorker \
-    --threads 8 \
-    --timeout 0 \
-    app.main:app
+CMD exec uvicorn app.main:app --host 0.0.0.0 --port $PORT
