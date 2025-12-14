@@ -1,4 +1,3 @@
-
 # Use the official Python image
 FROM python:3.12-slim
 
@@ -11,7 +10,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 # Install system dependencies
-# (If you need audio libraries like ffmpeg, add them here)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
@@ -20,7 +18,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# IMPORTANT: Add uvicorn with ASGI workers
+RUN pip install --default-timeout=120 --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
 COPY . .
@@ -28,5 +27,11 @@ COPY . .
 # Expose the port
 EXPOSE 8080
 
-# Command to run the application using Gunicorn
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app.main:app
+# Command to run the application using Gunicorn + Uvicorn workers (ASGI-compatible)
+CMD exec gunicorn \
+    --bind :$PORT \
+    --workers 1 \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --threads 8 \
+    --timeout 0 \
+    app.main:app
