@@ -28,4 +28,4 @@ COPY . .
 EXPOSE 8080
 
 # Command to run the application using Gunicorn + Uvicorn workers (ASGI-compatible)
-CMD exec uvicorn app.main:app --host 0.0.0.0 --port $PORT
+CMD sh -c "gunicorn -k uvicorn.workers.UvicornWorker app.main:app -b 0.0.0.0:${PORT:-8080} --workers 1 --timeout 120"
