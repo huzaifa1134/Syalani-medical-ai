@@ -94,13 +94,13 @@ async def api_info():
         "interaction_modes": ["voice", "text"]
     }
 
-if __name__ == "__main__":
-    import uvicorn
+# if __name__ == "__main__":
+#     import uvicorn
 
-    uvicorn.run(
-        "app.main:app",
-        host=settings.HOST,
-        port=settings.PORT,
-        reload=settings.DEBUG,
-        log_level=settings.LOG_LEVEL.lower(),
-    )
+#     uvicorn.run(
+#         "app.main:app",
+#         host=settings.HOST,
+#         port=settings.PORT,
+#         reload=settings.DEBUG,
+#         log_level=settings.LOG_LEVEL.lower(),
+#     )
