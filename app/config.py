@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     #fastapi
     API_VERSION: str = "v1"
     HOST: str = "0.0.0.0"
-    PORT: int = 8000
+    PORT: int = 8080
 
     #mongodb settings
     MONGODB_URI: str = ""
