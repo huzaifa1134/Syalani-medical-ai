@@ -20,17 +20,25 @@ class ContextService:
     async def connect(self):
         """Initialize Redis connection"""
         try:
-            # Build Redis URL with SSL (rediss:// for SSL)
-            redis_url = f"rediss://:{settings.REDIS_PASSWORD}@{settings.REDIS_HOST}:{settings.REDIS_PORT}/{settings.REDIS_DB}"
+            import ssl as ssl_module
 
-            # Use from_url for async Redis with SSL
-            self.redis_client = redis.from_url(
-                redis_url,
+            # Create SSL context that doesn't verify certificates
+            ssl_context = ssl_module.create_default_context()
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl_module.CERT_NONE
+
+            # Connect to Redis with SSL
+            self.redis_client = redis.Redis(
+                host=settings.REDIS_HOST,
+                port=int(settings.REDIS_PORT),
+                db=int(settings.REDIS_DB),
+                password=settings.REDIS_PASSWORD,
                 decode_responses=True,
-                socket_connect_timeout=5,
-                socket_timeout=5,
-                retry_on_timeout=True,
-                ssl_cert_reqs=None  # Don't verify SSL cert
+                ssl=True,
+                ssl_cert_reqs=None,
+                socket_connect_timeout=10,
+                socket_timeout=10,
+                retry_on_timeout=True
             )
 
             await self.redis_client.ping()
