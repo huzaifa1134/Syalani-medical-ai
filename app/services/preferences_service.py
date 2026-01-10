@@ -18,17 +18,16 @@ class PreferencesService:
     async def connect(self):
         """Initialize redis connection"""
         try:
-            # Build Redis URL with proper SSL for cloud Redis
-            redis_url = f"redis://:{settings.REDIS_PASSWORD}@{settings.REDIS_HOST}:{settings.REDIS_PORT}/{settings.REDIS_DB}"
+            # Build Redis URL with SSL (rediss:// for SSL)
+            redis_url = f"rediss://:{settings.REDIS_PASSWORD}@{settings.REDIS_HOST}:{settings.REDIS_PORT}/{settings.REDIS_DB}"
 
-            # Use from_url with SSL and retry settings
-            self.redis_client = redis.Redis.from_url(
+            # Use from_url for async Redis with SSL
+            self.redis_client = redis.from_url(
                 redis_url,
                 decode_responses=True,
                 socket_connect_timeout=5,
                 socket_timeout=5,
                 retry_on_timeout=True,
-                ssl=True,  # Enable SSL for cloud Redis
                 ssl_cert_reqs=None  # Don't verify SSL cert
             )
 
