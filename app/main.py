@@ -18,20 +18,44 @@ async def lifespan(app: FastAPI):
 
     logger.info("application_starting", env=settings.ENV, version=settings.API_VERSION)
 
+    # Track which services successfully connected
+    services_status = {
+        "redis_context": False,
+        "redis_preferences": False,
+        "mongodb": False
+    }
+
+    # Try to connect to Redis (context service) - non-fatal
     try:
         await context_service.connect()
+        services_status["redis_context"] = True
         logger.info("context_redis_initialized")
-
-        await preferences_service.connect()
-        logger.info("preferences_redis_initialized")
-
-        await rag_service.connect()
-        logger.info("mongodb_initialized")
-
-        logger.info("application_ready", features=['bilingual', 'voice_text_modes'])
     except Exception as e:
-        logger.error("startup_failed", error=str(e))
+        logger.warning("context_redis_failed_continuing", error=str(e))
+        # Continue anyway - app can work without context service
+
+    # Try to connect to Redis (preferences service) - non-fatal
+    try:
+        await preferences_service.connect()
+        services_status["redis_preferences"] = True
+        logger.info("preferences_redis_initialized")
+    except Exception as e:
+        logger.warning("preferences_redis_failed_continuing", error=str(e))
+        # Continue anyway - will use defaults
+
+    # MongoDB is critical for doctor lookup - keep as fatal
+    try:
+        await rag_service.connect()
+        services_status["mongodb"] = True
+        logger.info("mongodb_initialized")
+    except Exception as e:
+        logger.error("mongodb_connection_failed_critical", error=str(e))
+        # MongoDB is critical, so we raise
         raise
+
+    logger.info("application_ready",
+                features=['bilingual', 'voice_text_modes'],
+                services=services_status)
 
     yield
 

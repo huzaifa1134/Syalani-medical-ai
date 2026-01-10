@@ -20,17 +20,24 @@ class ContextService:
     async def connect(self):
         """Initialize Redis connection"""
         try:
-            self.redis_client = await redis.Redis(
-                host=settings.REDIS_HOST,
-                port=settings.REDIS_PORT,
-                db=settings.REDIS_DB,
-                password=settings.REDIS_PASSWORD if settings.REDIS_PASSWORD else None,
-                decode_responses=True
+            # Build Redis URL with proper SSL for cloud Redis
+            redis_url = f"redis://:{settings.REDIS_PASSWORD}@{settings.REDIS_HOST}:{settings.REDIS_PORT}/{settings.REDIS_DB}"
+
+            # Use from_url with SSL and retry settings
+            self.redis_client = redis.Redis.from_url(
+                redis_url,
+                decode_responses=True,
+                socket_connect_timeout=5,
+                socket_timeout=5,
+                retry_on_timeout=True,
+                ssl=True,  # Enable SSL for cloud Redis
+                ssl_cert_reqs=None  # Don't verify SSL cert
             )
+
             await self.redis_client.ping()
             logger.info("redis_connected", host=settings.REDIS_HOST)
         except Exception as e:
-            logger.error("redis_connection_failed", error=str(e))
+            logger.error("redis_connection_failed", error=str(e), host=settings.REDIS_HOST, port=settings.REDIS_PORT)
             raise
 
     async def disconnect(self):

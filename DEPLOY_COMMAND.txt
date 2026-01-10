@@ -1,0 +1,14 @@
+# DEPLOYMENT COMMAND FOR GOOGLE CLOUD RUN
+# Copy and paste this entire command in PowerShell
+
+gcloud run deploy whatsapp-ai-assistant `
+  --image gcr.io/medical-ai-project-479608/whatsapp-ai-assistant `
+  --region us-central1 `
+  --platform managed `
+  --allow-unauthenticated `
+  --memory 1Gi `
+  --cpu 1 `
+  --timeout 300 `
+  --max-instances 10 `
+  --min-instances 0 `
+  --set-env-vars "ENV=production,DEBUG=false,LOG_LEVEL=INFO,APP_NAME=WhatsApp Voice AI,API_VERSION=v1,HOST=0.0.0.0,PORT=8080,MONGODB_URI=mongodb+srv://saylani_admin:y7C2stvn3vhPJ0eF@saylanimedical.4umnkjt.mongodb.net/?appName=SaylaniMedical,MONGODB_DB_NAME=healthcare_ai,MONGODB_COLLECTION=doctors,MONGODB_VECTOR_COLLECTION=treatment_protocols,REDIS_HOST=redis-17022.c212.ap-south-1-1.ec2.cloud.redislabs.com,REDIS_PORT=17022,REDIS_DB=0,REDIS_PASSWORD=txCKltv8LqcDPkAYsckpT8pFLJiLMGBP,CONTEXT_TTL=1800,GCP_PROJECT_ID=medical-ai-project-479608,GCP_STT_LANGUAGE=ur-PK,GCP_TTS_LANGUAGE=ur-PK,GCP_TTS_VOICE_NAME=ur-PK-Standard-A,GEMINI_API_KEY=AIzaSyA6yHLofoL7cEcaBJM-5c6VyI7ir0VXg2k,GEMINI_MODEL=gemini-1.5-flash,WABA_API_URL=https://graph.facebook.com/v21.0,WABA_PHONE_NUMBER_ID=849675188236878,WABA_ACCESS_TOKEN=EAAennTz4vwwBQLeP8xXEZBQULEx4vwdjOc12BIHB4KFn2eTEaHzkeRqobaoBXHNnpDKbpHYlJMYObWlxnPQztFZB8qbsAik6A4ZCLQGQwiCLjTc05fJSTu1KVjM3tfCZA7llIgmpqgSbNYtrPn9Xhzx6amFxoho2YHOJyZATEsewLUTnM7z8FGZCdKYCQNWwZDZD,WABA_VERIFY_TOKEN=yyFwT4VaPnzK9vSSAfICqbzk9etYSW0H,MAX_MESSAGES_PER_USER=10,RATE_LIMIT_WINDOW=60"
