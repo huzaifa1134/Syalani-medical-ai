@@ -52,12 +52,12 @@ class SpeechService:
 
             response = self.stt_client.recognize(config=config, audio=audio)
 
-            if not request.results:
+            if not response.results:
                 logger.warning("no_speech_detected", audio_url=request.audio_url)
                 return STTResponse(
                     transcript="",
                     confidence=0.0,
-                    language=request.language
+                    detected_language=request.language
                 )
 
             result = response.results[0]
@@ -114,9 +114,9 @@ class SpeechService:
                 duration=len(response.audio_content) / 16000
             )
 
-        
+
         except Exception as e:
-            logger.error("tts_failed", error=error, text=request.text[:50])
+            logger.error("tts_failed", error=str(e), text=request.text[:50])
             raise
 
 speech_service = SpeechService()

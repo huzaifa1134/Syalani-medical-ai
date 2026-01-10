@@ -88,7 +88,7 @@ class RAGService:
                 if doctor.get("nearby_branches"):
                     min_distance = min(
                         b.get("branch_distance", float('inf'))
-                        for b in doctor["nearest_branches"]
+                        for b in doctor["nearby_branches"]
                     )
                     doctor["min_distance"] = min_distance
                 else:
@@ -171,7 +171,7 @@ class RAGService:
                     "$vectorSearch": {
                             "index": "treatment_vector_index",
                             "path": "embedding",
-                            "query_vector": self._get_embedding(query),
+                            "queryVector": await self._get_embeddings(query),
                             "numCandidates": 20,
                             "limit": limit
                     }
@@ -264,7 +264,7 @@ class RAGService:
                     user_location=rag_query.user_location
                 )
             else:
-                results = self.simple_search(query)
+                results = await self.simple_search(query)
 
             return RAGResult(
                 results=results,

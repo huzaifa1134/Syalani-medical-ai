@@ -39,8 +39,9 @@ class LanguageDetector:
         words = text_lower.split()
         avg_word_length = sum(len(w) for w in words) / len(words) if words else 0
 
-        if english_score > 0 or (avg_word_length < 6 and any(c.isacii() for c in text)):
+        if english_score > 0 or (avg_word_length < 6 and any(c.isascii() for c in text)):
             logger.info("language_detected", language="english", method="indicators", score=english_score)
+            return Language.ENGLISH
 
         logger.info("language_detected", language="urdu", method="default")
         return Language.URDU

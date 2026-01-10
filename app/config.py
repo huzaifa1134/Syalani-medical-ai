@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 from functools import lru_cache
 from typing import Optional
 
@@ -6,7 +7,7 @@ class Settings(BaseSettings):
     #app settings
     APP_NAME: str = "Whatsapp Voice AI"
     ENV: str = "production"
-    DEBUG: bool = False 
+    DEBUG: bool = False
     LOG_LEVEL: str = "INFO"
 
     #fastapi
@@ -16,6 +17,20 @@ class Settings(BaseSettings):
 
     #mongodb settings
     MONGODB_URI: str = ""
+
+    @field_validator('MONGODB_URI')
+    @classmethod
+    def validate_mongodb_uri(cls, v: str) -> str:
+        if not v or v.strip() == "":
+            raise ValueError(
+                "MONGODB_URI is required. Set it in your environment variables.\n"
+                "Example: MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/"
+            )
+        if not v.startswith(('mongodb://', 'mongodb+srv://')):
+            raise ValueError(
+                "MONGODB_URI must start with 'mongodb://' or 'mongodb+srv://'"
+            )
+        return v
     MONGODB_DB_NAME: str = "healthcare_ai"
     MONGODB_COLLECTION: str = "doctors"
     MONGODB_VECTOR_COLLECTION: str = "treatment_protocols"

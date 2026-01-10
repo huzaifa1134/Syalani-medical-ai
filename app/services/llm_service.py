@@ -48,9 +48,11 @@ Important guidelines:
 
     async def generate_response(self, request: LLMRequest) -> LLMResponse:
         """Generate AI response based on user query, context, and RAG results"""
+        # Initialize detected_language before try block
+        detected_language = request.language
+
         try:
-            #detect lanauage if AUTO
-            detected_language = request.language
+            #detect language if AUTO
             if request.language == Language.AUTO:
                 detected_language = language_detector.detect(request.user_query)
                 logger.info("language_auto_detected", detected=detected_language)
@@ -82,16 +84,23 @@ Important guidelines:
                 tokens_used=tokens_used
             )
 
+            return LLMResponse(
+                response=response_text,
+                detected_language=detected_language,
+                model=settings.GEMINI_MODEL,
+                tokens_used=tokens_used
+            )
+
         except Exception as e:
             logger.error("llm_generation_failed", error=str(e), query=request.user_query[:50])
 
-            fallabck_messages = {
+            fallback_messages = {
                 Language.URDU: "معاف کیجیے، میں ابھی آپ کی مدد نہیں کر سکتا۔ براہ کرم دوبارہ کوشش کریں",
                 Language.ENGLISH: "I'm Sorry, I cant assist you right now. Please try again in a bit"
             }
 
             return LLMResponse(
-                response=fallabck_messages.get(detected_language, fallabck_messages[Language.ENGLISH]),
+                response=fallback_messages.get(detected_language, fallback_messages[Language.URDU]),
                 detected_language=detected_language,
                 model=settings.GEMINI_MODEL,
                 tokens_used=0

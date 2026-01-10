@@ -233,7 +233,7 @@ async def process_query(user_query: str, from_number: str, user_language: Langua
             query=user_query,
             language=detected_language,
             user_context=user_context.chat_history,
-            search_type="hybrid"
+            search_type="simple"
         )
         rag_result = await rag_service.search(rag_query)
 
